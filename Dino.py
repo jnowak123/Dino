@@ -6,7 +6,6 @@ import pymunk as pym
 from pymunk.pyglet_util import DrawOptions
 from pyglet.window import FPSDisplay, key
 
-num = 0 
 
 class Player(pym.Body):
     def __init__(self, space):
@@ -16,13 +15,17 @@ class Player(pym.Body):
         shape.elasticity = 0
         space.add(self, shape)
 
+enemy_types = [(160,80), (40, 80), (40, 40), (40, 40), (120, 40)]
+
 class Enemy(pym.Body):
     def __init__(self, space):
         super().__init__(10, pym.inf)
         self.position = 1280, 140
         self.velocity = -200, 0 # in the future, velocity will be equal to speed
         self.elasticity = 0
-        shape = pym.Poly.create_box(self, (80, 40))
+        global enemy_types
+        a = random.randint(0, 4)
+        shape = pym.Poly.create_box(self, enemy_types[a])
         space.add(self, shape)
 
 class Ground(pym.Body):
@@ -46,7 +49,6 @@ class Window(pyg.window.Window):
         self.player = Player(self.space)
         self.ground = Ground(self.space)
 
-
     def on_draw(self):
         self.clear()
         self.space.debug_draw(self.options) #drawing the pymunk space
@@ -58,7 +60,7 @@ class Window(pyg.window.Window):
 
     def update(self, dt): #date and time
         self.space.step(dt)
-        a = random.randint(0, 100)
+        a = random.randint(0, 100) # enemy generate
         if a == 1:
             self.enemy = Enemy(self.space)
 
