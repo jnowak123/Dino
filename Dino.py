@@ -6,67 +6,60 @@ import pymunk as pym
 from pymunk.pyglet_util import DrawOptions
 from pyglet.window import FPSDisplay, key
 
-
-class Player(pym.Body):
-    def __init__(self, space):
-        super().__init__(10, pym.inf) #infinite moment => doesn't roll
-        self.position = 200, 40
-        shape = pym.Poly.create_box(self, (40, 80))
-        shape.elasticity = 0
-        space.add(self, shape)
+def Player(space):
+    body = pym.Body(10, pym.inf) #infinite moment => doesn't roll
+    body.position = 200, 40
+    shape = pym.Poly.create_box(body, (40, 80))
+    shape.elasticity = 0
+    space.add(body, shape)
+    return body
 
 enemy_types = [(160,80), (40, 80), (40, 40), (40, 40), (120, 40)]
 
-class Enemy(pym.Body):
-    def __init__(self, space):
-        super().__init__(10, pym.inf, 1)
-        global enemy_types
-        a = random.randint(0, 4)
-        if a == 0 or a == 1:
-            self.position = 1280, 60
-        else:
-            self.position = 1280, 40
-        self.velocity = -200, 0 # in the future, velocity will be equal to speed
-        self.elasticity = 0
-        shape = pym.Poly.create_box(self, enemy_types[a])
-        space.add(self, shape)
+def Enemy(space):
+    body = pym.Body(10, pym.inf, 1)
+    global enemy_types
+    a = random.randint(0, 4)
+    if a == 0 or a == 1:
+        body.position = 1280, 60
+    else:
+        body.position = 1280, 40
+    body.velocity = -200, 0 # in the future, velocity will be equal to speed
+    body.elasticity = 0
+    shape = pym.Poly.create_box(body, enemy_types[a])
+    space.add(body, shape)
 
-class Ground(pym.Body):
-    def __init__(self, space):
-        super().__init__(10, pym.inf, pym.Body.STATIC) #static body => no gravity effect or moving at all
-        self.position = 0, 0
-        shape = pym.Poly.create_box(self, (2700, 40))
-        shape.elasticity = 0
-        space.add(self, shape)
+def Ground(space):
+    body = pym.Body(10, pym.inf, pym.Body.STATIC) #static body => no gravity effect or moving at all
+    body.position = 0, 0
+    shape = pym.Poly.create_box(body, (2700, 40))
+    shape.elasticity = 0
+    space.add(body, shape)
 
-class Window(pyg.window.Window):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.set_location(30, 50) #window position
-        self.fps = FPSDisplay(self)
+window = pyg.window.Window(1280, 720, 'Dino', resizable=False)
+window.set_location(30, 50)
+options = DrawOptions()
 
-        self.space = pym.Space() #pymunk space
-        self.space.gravity = 0, -900
-        self.options = DrawOptions()
+space = pym.Space()
+space.gravity = 0, -900
 
-        self.player = Player(self.space)
-        self.ground = Ground(self.space)
+player = Player(space)
+Ground(space)
 
-    def on_draw(self):
-        self.clear()
-        self.space.debug_draw(self.options) #drawing the pymunk space
-        self.fps.draw()
+@window.event
+def on_draw():
+    window.clear()
+    space.debug_draw(options) #drawing the pymunk space
 
-    def on_key_press(self, symbol, modifiers):
-        if symbol == key.SPACE or symbol == key.UP:
-            self.player.velocity = 0, 600
+def on_key_press(symbol, modifiers):
+    if symbol == key.SPACE or symbol == key.UP:
+        pass
 
-    def update(self, dt): #date and time
-        self.space.step(dt)
-        a = random.randint(0, 80) # enemy generate
-        if a == 1:
-            self.enemy = Enemy(self.space)
+def update(dt): #date and time
+    space.step(dt)
+    a = random.randint(0, 80) # enemy generate
+    if a == 1:
+        Enemy(space)
 
-window = Window(1280, 720, "Pymunk", resizable=False)
-pyg.clock.schedule_interval(window.update, 1/60)
+pyg.clock.schedule_interval(update, 1/60)
 pyg.app.run()
