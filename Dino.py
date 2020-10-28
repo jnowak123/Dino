@@ -10,7 +10,7 @@ from pyglet.window import FPSDisplay, key
 class Player(pym.Body):
     def __init__(self, space):
         super().__init__(10, pym.inf) #infinite moment => doesn't roll
-        self.position = 200, 140
+        self.position = 200, 40
         shape = pym.Poly.create_box(self, (40, 80))
         shape.elasticity = 0
         space.add(self, shape)
@@ -19,12 +19,15 @@ enemy_types = [(160,80), (40, 80), (40, 40), (40, 40), (120, 40)]
 
 class Enemy(pym.Body):
     def __init__(self, space):
-        super().__init__(10, pym.inf)
-        self.position = 1280, 140
-        self.velocity = -200, 0 # in the future, velocity will be equal to speed
-        self.elasticity = 0
+        super().__init__(10, pym.inf, 1)
         global enemy_types
         a = random.randint(0, 4)
+        if a == 0 or a == 1:
+            self.position = 1280, 60
+        else:
+            self.position = 1280, 40
+        self.velocity = -200, 0 # in the future, velocity will be equal to speed
+        self.elasticity = 0
         shape = pym.Poly.create_box(self, enemy_types[a])
         space.add(self, shape)
 
@@ -55,12 +58,12 @@ class Window(pyg.window.Window):
         self.fps.draw()
 
     def on_key_press(self, symbol, modifiers):
-        if symbol == key.SPACE:
+        if symbol == key.SPACE or symbol == key.UP:
             self.player.velocity = 0, 600
 
     def update(self, dt): #date and time
         self.space.step(dt)
-        a = random.randint(0, 100) # enemy generate
+        a = random.randint(0, 80) # enemy generate
         if a == 1:
             self.enemy = Enemy(self.space)
 
