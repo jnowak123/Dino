@@ -5,7 +5,7 @@ import pyglet as pyg
 import pymunk as pym
 from pymunk.pyglet_util import DrawOptions
 from pyglet.window import FPSDisplay, key
-from pyglet.gl import *
+from pyglet.gl import glClearColor
 
 class Player(pym.Body):
     def __init__(self, space, duck):
@@ -15,16 +15,8 @@ class Player(pym.Body):
             self.shape = pym.Poly.create_box(self, (40, 40))
         else:
             self.shape = pym.Poly.create_box(self, (40, 80))
-        self.shape.elasticity = 0
+        self.shape.elasticity = 0.0
         space.add(self, self.shape)
-
-# class Background(pym.Body):
-#     def __init__(self, space):
-#         super().__init__(10, pym.inf, 2)
-#         self.position = 0, 0
-#         self.shape = pym.Poly.create_box(self, (1280, 720))
-#         self.shape.sensor = True
-#         space.add(self, self.shape)
 
 enemy_types = [(160,80), (40, 80), (40, 40), (40, 40), (120, 40)]
 
@@ -38,7 +30,7 @@ class Enemy(pym.Body):
         else:
             self.position = 1280, 40
         self.velocity = -200, 0 # in the future, velocity will be equal to speed
-        self.elasticity = 0
+        self.elasticity = 0.0
         shape = pym.Poly.create_box(self, enemy_types[a])
         space.add(self, shape)
 
@@ -47,20 +39,21 @@ class Ground(pym.Body):
         super().__init__(10, pym.inf, pym.Body.STATIC) #static body => no gravity effect or moving at all
         self.position = 0, 0
         shape = pym.Poly.create_box(self, (2700, 40))
-        shape.elasticity = 0
+        shape.elasticity = 0.0
         space.add(self, shape)
 
 class Window(pyg.window.Window):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        pyg.gl.glClearColor(1000,1000,1000,1000) #background colour
         self.set_location(30, 50) #window position
         self.fps = FPSDisplay(self)
 
         self.space = pym.Space() #pymunk space
         self.space.gravity = 0, -900
         self.options = DrawOptions()
-        pyg.gl.glClearColor(1000,1000,1000,1000)
-        #self.background = Background(self.space)
+        self.space.iterations = 250
+
         self.player = Player(self.space, False)
         self.ground = Ground(self.space)
 
