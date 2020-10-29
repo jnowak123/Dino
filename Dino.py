@@ -8,12 +8,15 @@ from pyglet.window import FPSDisplay, key
 
 
 class Player(pym.Body):
-    def __init__(self, space):
+    def __init__(self, space, duck):
         super().__init__(10, pym.inf) #infinite moment => doesn't roll
         self.position = 200, 40
-        shape = pym.Poly.create_box(self, (40, 80))
-        shape.elasticity = 0
-        space.add(self, shape)
+        if duck:
+            self.shape = pym.Poly.create_box(self, (40, 40))
+        else:
+            self.shape = pym.Poly.create_box(self, (40, 80))
+        self.shape.elasticity = 0
+        space.add(self, self.shape)
 
 enemy_types = [(160,80), (40, 80), (40, 40), (40, 40), (120, 40)]
 
@@ -49,9 +52,8 @@ class Window(pyg.window.Window):
         self.space.gravity = 0, -900
         self.options = DrawOptions()
 
-        self.player = Player(self.space)
+        self.player = Player(self.space, False)
         self.ground = Ground(self.space)
-        self.space.remove(self.player)
 
     def on_draw(self):
         self.clear()
@@ -61,6 +63,14 @@ class Window(pyg.window.Window):
     def on_key_press(self, symbol, modifiers):
         if symbol == key.SPACE or symbol == key.UP:
             self.player.velocity = 0, 600
+        elif symbol == key.DOWN:
+            self.space.remove(self.player.shape)
+            self.player = Player(self.space, True)
+
+    def on_key_release(self, symbol, modifiers):
+        if symbol == key.DOWN:
+            self.space.remove(self.player.shape)
+            self.player = Player(self.space, False)
 
     def update(self, dt): #date and time
         self.space.step(dt)
