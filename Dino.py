@@ -5,7 +5,7 @@ import pyglet as pyg
 import pymunk as pym
 from pymunk.pyglet_util import DrawOptions
 from pyglet.window import FPSDisplay, key
-
+from pyglet.gl import *
 
 class Player(pym.Body):
     def __init__(self, space, duck):
@@ -17,6 +17,14 @@ class Player(pym.Body):
             self.shape = pym.Poly.create_box(self, (40, 80))
         self.shape.elasticity = 0
         space.add(self, self.shape)
+
+# class Background(pym.Body):
+#     def __init__(self, space):
+#         super().__init__(10, pym.inf, 2)
+#         self.position = 0, 0
+#         self.shape = pym.Poly.create_box(self, (1280, 720))
+#         self.shape.sensor = True
+#         space.add(self, self.shape)
 
 enemy_types = [(160,80), (40, 80), (40, 40), (40, 40), (120, 40)]
 
@@ -51,7 +59,8 @@ class Window(pyg.window.Window):
         self.space = pym.Space() #pymunk space
         self.space.gravity = 0, -900
         self.options = DrawOptions()
-
+        pyg.gl.glClearColor(1000,1000,1000,1000)
+        #self.background = Background(self.space)
         self.player = Player(self.space, False)
         self.ground = Ground(self.space)
 
@@ -78,6 +87,6 @@ class Window(pyg.window.Window):
         if a == 1:
             self.enemy = Enemy(self.space)
 
-window = Window(1280, 720, "Pymunk", resizable=False)
+window = Window(1280, 720, 'Pymunk', resizable=False)
 pyg.clock.schedule_interval(window.update, 1/60)
 pyg.app.run()
