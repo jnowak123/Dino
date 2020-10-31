@@ -24,7 +24,7 @@ class Window(pyg.window.Window):
         self.framerate = 1/60
         self.fps = FPSDisplay(self)
 
-        self.player = Game_Object(200, 40, 'dino.png')
+        self.player = Game_Object(200, 40, 'kostium3.png')
 
     def on_draw(self):
         self.clear()
