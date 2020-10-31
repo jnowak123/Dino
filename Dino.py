@@ -16,7 +16,7 @@ class Player(pym.Body):
         else:
             self.shape = pym.Poly.create_box(self, (40, 80))
             self.position = 200, 60
-        self.elasticity = 0.0
+        self.shape.elasticity = 0.0001
         space.add(self, self.shape)
 
 enemy_types = [(160,80), (40, 80), (40, 40), (40, 40), (120, 40)]
@@ -31,17 +31,17 @@ class Enemy(pym.Body):
         else:
             self.position = 1280, 40
         self.velocity = -200, 0 #in future versions the speed will change as the difficulty increases
-        shape = pym.Poly.create_box(self, enemy_types[a])
-        self.elasticity = 0.0
-        space.add(self, shape)
+        self.shape = pym.Poly.create_box(self, enemy_types[a])
+        self.shape.elasticity = 0.0001
+        space.add(self, self.shape)
 
 class Ground(pym.Body):
     def __init__(self, space):
         super().__init__(10, pym.inf, 2) #2 means body type STATIC
         self.position = 0, 0
-        shape = pym.Poly.create_box(self, (2700, 40))
-        self.elasticity = 0.0
-        space.add(self, shape)
+        self.shape = pym.Poly.create_box(self, (2700, 40))
+        self.shape.elasticity = 0.0001
+        space.add(self, self.shape)
 
 class Window(pyg.window.Window):
     def __init__(self, *args, **kwargs): #arguments and keyword arguments
@@ -51,7 +51,7 @@ class Window(pyg.window.Window):
         self.fps = FPSDisplay(self)
 
         self.space = pym.Space() #pymunk space
-        #self.space.gravity = 0, -900 
+        self.space.gravity = 0, -900 
         self.options = DrawOptions() #pymunk + pyglet integration
         self.space.iterations = 250 #how often a list checks if something should bounce
 
@@ -61,9 +61,6 @@ class Window(pyg.window.Window):
         self.sleep = 30 #30 frames untill first enemy
         self.doing_duck = False
         self.doing_jump = False
-
-        self.player.gravity()
-        self.player.update()
 
     def on_draw(self):
         self.clear()
@@ -86,7 +83,7 @@ class Window(pyg.window.Window):
 #checks if the player was allowed to jump/duck. If the player hit and release a key in the air, nothing happens
             if self.doing_jump and self.player.velocity[1] > 0: #checks if player isn't already falling
                 self.doing_jump = False
-                self.player.velocity = 0, 100
+                self.player.velocity = 0, 0
         if symbol == key.DOWN and self.doing_duck:
             self.doing_duck = False
             self.space.remove(self.player.shape) #deletes small player and creates a new, normally sized one
