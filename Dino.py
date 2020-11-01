@@ -11,10 +11,10 @@ class Player(pym.Body):
     def __init__(self, space, duck):
         super().__init__(10, pym.inf)
         if duck: #creates smaller player when ducking
-            self.shape = pym.Poly.create_box(self, (40, 40))
+            self.shape = pym.Poly.create_box(self, size= (40,40))
             self.position = 200, 40
         else:
-            self.shape = pym.Poly.create_box(self, (40, 80))
+            self.shape = pym.Poly(self, ((0,32), (0,54), (44,88), (84,88), (84,64), (48,0), (18,0)))
             self.position = 200, 60
         self.shape.elasticity = 0.0001
         space.add(self, self.shape)
@@ -61,11 +61,21 @@ class Window(pyg.window.Window):
         self.sleep = 30 #30 frames untill first enemy
         self.doing_duck = False
         self.doing_jump = False
-
+        
+        self.jumping_image = pyg.image.load("sprites/kostium3.png")
+        self.jumping_sprite = pyg.sprite.Sprite(self.jumping_image)
+        self.walking_images = [pyg.image.load("sprites/kostium3.png"),pyg.image.load("sprites/kostium5.png"),pyg.image.load("sprites/kostium3.png"),pyg.image.load("sprites/kostium6.png")]
+        self.walking_animation = pyg.image.Animation.from_image_sequence(self.walking_images, duration= 0.075, loop= True)
+        self.walking_sprite = pyg.sprite.Sprite(self.walking_animation)
+    
     def on_draw(self):
         self.clear()
         self.space.debug_draw(self.options) #drawing the pymunk space in pyglet
         self.fps.draw()
+        if self.doing_jump :
+            self.jumping_sprite.draw()
+        elif not self.doing_jump and not self.doing_duck :
+            self.walking_sprite.draw()
 
     def on_key_press(self, symbol, modifiers):
 #The player can only begin an action when he is on the ground, we check this using his y coordinate (rounded to 10)
@@ -92,9 +102,13 @@ class Window(pyg.window.Window):
     def update(self, dt): #date and time
         self.space.step(dt) #steps every frame
         self.sleep -= 1
+        self.walking_sprite.position = self.player.position
+        self.jumping_sprite.position = self.player.position
         if self.sleep == 0:
             self.sleep = random.randint(90, 150) #random sleep time intil new enemy is generated
             self.enemy = Enemy(self.space)
+        
+        
     
 
 window = Window(1280, 720, 'Pymunk', resizable=False)

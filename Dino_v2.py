@@ -28,7 +28,7 @@ class Window(pyg.window.Window):
         self.framerate = 1/60
         self.fps = FPSDisplay(self)
 
-        self.player = Game_Object(200, 40, 'dino1.png')
+        self.player = Game_Object(200, 40, 'kostium3.png')
         self.ground = Shape()
         self.enemy_types = [(200,200,200,200)]
 
