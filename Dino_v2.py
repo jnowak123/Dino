@@ -16,8 +16,9 @@ class Game_Object(pym.Body):
         self.shape.elasticity = 0.0
         space.add(self, self.shape)
 
-#class Sprites(pyg.sprite):
-    #def __init__(self):
+class Sprites():
+    def __init__(self):
+        pass
 
 object_types = [[40, 80, 200, 60, 0, 0, 0], [40, 40, 200, 40, 0, 0, 0], [2700, 40, 0, 0, 0, 0, 2], #player, player ducking and ground
                 [160,80,1280,60], [40, 80,1280,60], [40, 40,1280,40], [40, 40,1280,40], [120, 40,1280,40]] #enemies
@@ -40,9 +41,6 @@ class Window(pyg.window.Window):
         self.sleep = 30 #30 frames untill first enemy
         self.doing_duck = False
         self.doing_jump = False
-        self.player = Game_Object(200, 40, 'kostium3.png')
-        self.ground = Shape()
-        self.enemy_types = [(200,200,200,200)]
 
     def on_draw(self):
         self.clear()
@@ -73,11 +71,18 @@ class Window(pyg.window.Window):
 
     def update(self, dt): #date and time
         self.space.step(dt) #steps every frame
+        self.enemy_generation()
+        self.sprite_update()
+
+    def enemy_generation(self):
         self.sleep -= 1
         if self.sleep == 0:
             self.sleep = random.randint(90, 150) #random sleep time intil new enemy is generated
             x = random.randint(3,7)
             self.enemy = Game_Object(self.space, *object_types[x], -200, 0, 1)
+
+    def sprite_update(self):
+        pass
 
 window = Window(1280, 720, 'Pymunk', resizable=False)
 pyg.clock.schedule_interval(window.update, 1/60) #60 frames per second
