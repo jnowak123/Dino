@@ -8,18 +8,19 @@ from pyglet.window import FPSDisplay, key
 from pyglet.gl import glClearColor
 
 class Game_Object(pym.Body):
-    def __init__(self, space, sizex, sizey, posx, posy, velx, vely, body_type, image=None):
-        if image:
-            pass
-        else:
-            super().__init__(10, pym.inf, body_type)
-            self.position = posx, posy
-            self.velocity = velx, vely
-            self.shape = pym.Poly.create_box(self, (sizex, sizey))
-            self.shape.elasticity = 0.0
-            space.add(self, self.shape)
+    def __init__(self, space, sizex, sizey, posx, posy, velx, vely, body_type):
+        super().__init__(10, pym.inf, body_type)
+        self.position = posx, posy
+        self.velocity = velx, vely
+        self.shape = pym.Poly.create_box(self, (sizex, sizey))
+        self.shape.elasticity = 0.0
+        space.add(self, self.shape)
 
-enemy_types = [[160,80], [40, 80], [40, 40], [40, 40], [120, 40]]
+#class Sprites(pyg.sprite):
+    #def __init__(self):
+
+object_types = [[40, 80, 200, 60, 0, 0, 0], [40, 40, 200, 40, 0, 0, 0], [2700, 40, 0, 0, 0, 0, 2], #player, player ducking and ground
+                [160,80,1280,60], [40, 80,1280,60], [40, 40,1280,40], [40, 40,1280,40], [120, 40,1280,40]] #enemies
 
 class Window(pyg.window.Window):
     def __init__(self, *args, **kwargs): #arguments and keyword arguments
@@ -33,12 +34,15 @@ class Window(pyg.window.Window):
         self.options = DrawOptions() #pymunk + pyglet integration
         self.space.iterations = 250 #how often a list checks if something should bounce
 
-        self.player = Game_Object(self.space, 40, 80, 200, 60, 0, 0, 0)
-        self.ground = Game_Object(self.space, 2700, 40, 0, 0, 0, 0, 2)
+        self.player = Game_Object(self.space, *object_types[0])
+        self.ground = Game_Object(self.space, *object_types[2])
 
         self.sleep = 30 #30 frames untill first enemy
         self.doing_duck = False
         self.doing_jump = False
+        self.player = Game_Object(200, 40, 'kostium3.png')
+        self.ground = Shape()
+        self.enemy_types = [(200,200,200,200)]
 
     def on_draw(self):
         self.clear()
@@ -54,30 +58,26 @@ class Window(pyg.window.Window):
             elif symbol == key.DOWN:
                 self.doing_duck = True #see key release
                 self.space.remove(self.player.shape) #deletes the player, to then create a smaller one
-                self.player = Game_Object(self.space, 40, 40, 200, 40, 0, 0, 0)
+                self.player = Game_Object(self.space, *object_types[1])
 
     def on_key_release(self, symbol, modifiers):
         if symbol == key.SPACE or symbol == key.UP:
 #checks if the player was allowed to jump/duck. If the player hit and release a key in the air, nothing happens
             if self.doing_jump and self.player.velocity[1] > 0: #checks if player isn't already falling
                 self.doing_jump = False
-                self.player.velocity = 0, 100
+                self.player.velocity = 0, 0
         if symbol == key.DOWN and self.doing_duck:
             self.doing_duck = False
             self.space.remove(self.player.shape) #deletes small player and creates a new, normally sized one
-            self.player = Game_Object(self.space, 40, 80, 200, 60, 0, 0, 0)
+            self.player = Game_Object(self.space, *object_types[0])
 
     def update(self, dt): #date and time
         self.space.step(dt) #steps every frame
         self.sleep -= 1
         if self.sleep == 0:
             self.sleep = random.randint(90, 150) #random sleep time intil new enemy is generated
-            x = random.randint(0,4)
-            if x <= 1:
-                self.enemy = Game_Object(self.space, enemy_types[x][0], enemy_types[x][1], 1280, 60, -200, 0, 1)
-            else:
-                self.enemy = Game_Object(self.space, enemy_types[x][0], enemy_types[x][1], 1280, 40, -200, 0, 1)
-    
+            x = random.randint(3,7)
+            self.enemy = Game_Object(self.space, *object_types[x], -200, 0, 1)
 
 window = Window(1280, 720, 'Pymunk', resizable=False)
 pyg.clock.schedule_interval(window.update, 1/60) #60 frames per second
