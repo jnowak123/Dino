@@ -67,6 +67,9 @@ class Window(pyg.window.Window):
         self.walking_images = [pyg.image.load("sprites/kostium3.png"),pyg.image.load("sprites/kostium5.png"),pyg.image.load("sprites/kostium3.png"),pyg.image.load("sprites/kostium6.png")]
         self.walking_animation = pyg.image.Animation.from_image_sequence(self.walking_images, duration= 0.075, loop= True)
         self.walking_sprite = pyg.sprite.Sprite(self.walking_animation)
+        self.ducking_images = [pyg.image.load("sprites/kostium7.png"),pyg.image.load("sprites/kostium8.png"),pyg.image.load("sprites/kostium7.png"),pyg.image.load("sprites/kostium9.png")]
+        self.ducking_animation = pyg.image.Animation.from_image_sequence(self.ducking_images, duration= 0.075, loop= True)
+        self.ducking_sprite = pyg.sprite.Sprite(self.ducking_animation)
     
     def on_draw(self):
         self.clear()
@@ -74,6 +77,8 @@ class Window(pyg.window.Window):
         self.fps.draw()
         if self.doing_jump :
             self.jumping_sprite.draw()
+        if self.doing_duck :
+            self.ducking_sprite.draw()
         elif not self.doing_jump and not self.doing_duck :
             self.walking_sprite.draw()
 
