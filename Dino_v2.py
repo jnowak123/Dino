@@ -21,7 +21,7 @@ class Sprites():
         pass
 
 object_types = [[40, 80, 200, 60, 0, 0, 0], [40, 40, 200, 40, 0, 0, 0], [2700, 40, 0, 0, 0, 0, 2], #player, player ducking and ground
-                [160,80,1280,60], [40, 80,1280,60], [40, 40,1280,40], [40, 40,1280,40], [120, 40,1280,40]] #enemies
+                [160,80,1280,60], [40, 80,1280,60], [40, 40,1280,40], [40, 40,1280,40], [120, 40,1280,40]] #cactuses
 
 class Window(pyg.window.Window):
     def __init__(self, *args, **kwargs): #arguments and keyword arguments
@@ -39,6 +39,7 @@ class Window(pyg.window.Window):
         self.ground = Game_Object(self.space, *object_types[2])
 
         self.sleep = 30 #30 frames untill first enemy
+        self.game_speed = 200
         self.doing_duck = False
         self.doing_jump = False
 
@@ -73,13 +74,14 @@ class Window(pyg.window.Window):
         self.space.step(dt) #steps every frame
         self.enemy_generation()
         self.sprite_update()
+        self.game_speed += 0.1
 
     def enemy_generation(self):
         self.sleep -= 1
         if self.sleep == 0:
             self.sleep = random.randint(90, 150) #random sleep time intil new enemy is generated
             x = random.randint(3,7)
-            self.enemy = Game_Object(self.space, *object_types[x], -200, 0, 1)
+            self.enemy = Game_Object(self.space, *object_types[x], -self.game_speed, 0, 1)
 
     def sprite_update(self):
         pass
