@@ -60,11 +60,11 @@ class Window(pyg.window.Window):
     def on_key_release(self, symbol, modifiers):
         if symbol == key.SPACE or symbol == key.UP and self.state == 'jumping':
             self.state = 'falling'
-        elif symbol == key.DOWN:
+        elif symbol == key.DOWN and self.state == 'ducking':
             self.state = 'unducking'
 
     def coll_ground(self, arbiter, space, data):
-        if self.state != 'ducking' or self.state != 'unducking':
+        if self.state != 'ducking' and self.state != 'unducking':
             self.state = None
         return True
 
@@ -73,18 +73,20 @@ class Window(pyg.window.Window):
         self.action(self.player, self.state)
         self.enemy_generation()
         self.sprite_update()
+        print(self.state)
 
     def action (self, player, state=None):
         if self.state == 'jumping':
             player.velocity += 0, 100
         elif self.state == 'falling':
-            player.velocity += 0, -10
+            player.velocity += 0, -20
         elif self.state == 'ducking':
             self.space.remove(self.player.shape) #deletes the player, to then create a smaller one
             self.player = Game_Object(self.space, *object_types[1])
         elif self.state == 'unducking':
             self.space.remove(self.player.shape) #deletes small player and creates a new, normally sized one
             self.player = Game_Object(self.space, *object_types[0])
+            self.state = None
         else:
             player.velocity = 0, 0
 
@@ -93,7 +95,7 @@ class Window(pyg.window.Window):
         if self.sleep == 0:
             self.sleep = random.randint(90, 150) #random sleep time intil new enemy is generated
             x = random.randint(3,7)
-            self.enemy = Game_Object(self.space, *object_types[x], -200, 0, 1, 3)
+            #self.enemy = Game_Object(self.space, *object_types[x], -200, 0, 1, 3)
 
     def sprite_update(self):
         pass
