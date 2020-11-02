@@ -21,7 +21,8 @@ class Sprites(): #sprite class, todo
         pass
 
 object_types = [[40, 80, 200, 60, 0, 0, 0, 2], [40, 40, 200, 40, 0, 0, 0, 2], [2700, 40, 0, 0, 0, 0, 2, 1], #player, player ducking and ground
-                [160,80,1280,60], [40, 80,1280,60], [40, 40,1280,40], [40, 40,1280,40], [120, 40,1280,40]] #cactuses
+                [160,80,1280,60], [40, 80,1280,60], [40, 40,1280,40], [40, 40,1280,40], [120, 40,1280,40], #cactuses
+                [80, 40, 1280, 40], [80, 40, 1280, 81], [80, 40, 1280, 121]] #birds
 
 class Window(pyg.window.Window):
     def __init__(self, *args, **kwargs): #arguments and keyword arguments
@@ -103,7 +104,7 @@ class Window(pyg.window.Window):
         self.sleep -= 1
         if self.sleep == 0:
             self.sleep = random.randint(90, 150) #random sleep time intil new enemy is generated
-            x = random.randint(3,7)
+            x = random.randint(3,10)
             self.enemy = Game_Object(self.space, *object_types[x], -200, 0, 1, 3)
 
     def sprite_update(self): #to do
