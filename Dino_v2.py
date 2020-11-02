@@ -39,10 +39,10 @@ class Window(pyg.window.Window):
 
         self.sleep = 30 #30 frames untill first enemy
         self.state = None
-        self.doing_jump = False
+        self.doing_duck = False
 
         ground_handler = self.space.add_collision_handler(1, 2)
-        ground_handler.begin = self.coll_begin
+        ground_handler.begin = self.coll_ground
 
     def on_draw(self):
         self.clear()
@@ -50,36 +50,41 @@ class Window(pyg.window.Window):
         self.fps.draw()
 
     def on_key_press(self, symbol, modifiers):
-        if symbol == key.SPACE or symbol == key.UP:
-            self.state = 'jumping'
-        elif symbol == key.DOWN:
-            self.doing_duck = True #see key release
-            self.space.remove(self.player.shape) #deletes the player, to then create a smaller one
-            self.player = Game_Object(self.space, *object_types[1])
+        if self.state == None:
+            if symbol == key.SPACE or symbol == key.UP:
+                self.state = 'jumping'
+            elif symbol == key.DOWN:
+                self.state = 'ducking'
+
 
     def on_key_release(self, symbol, modifiers):
-        if symbol == key.SPACE or symbol == key.UP:
+        if symbol == key.SPACE or symbol == key.UP and self.state == 'jumping':
             self.state = 'falling'
-        if symbol == key.DOWN and self.doing_duck:
-            self.doing_duck = False
-            self.space.remove(self.player.shape) #deletes small player and creates a new, normally sized one
-            self.player = Game_Object(self.space, *object_types[0])
+        elif symbol == key.DOWN:
+            self.state = 'unducking'
 
-    def coll_begin(self, arbiter, space, data):
-        self.state = None
+    def coll_ground(self, arbiter, space, data):
+        if self.state != 'ducking' or self.state != 'unducking':
+            self.state = None
         return True
 
     def update(self, dt): #date and time
         self.space.step(dt) #steps every frame
-        self.jump(self.player, self.state)
+        self.action(self.player, self.state)
         self.enemy_generation()
         self.sprite_update()
 
-    def jump (self, player, state=None):
-        if state == 'jumping':
+    def action (self, player, state=None):
+        if self.state == 'jumping':
             player.velocity += 0, 100
-        elif state == 'falling':
+        elif self.state == 'falling':
             player.velocity += 0, -10
+        elif self.state == 'ducking':
+            self.space.remove(self.player.shape) #deletes the player, to then create a smaller one
+            self.player = Game_Object(self.space, *object_types[1])
+        elif self.state == 'unducking':
+            self.space.remove(self.player.shape) #deletes small player and creates a new, normally sized one
+            self.player = Game_Object(self.space, *object_types[0])
         else:
             player.velocity = 0, 0
 
