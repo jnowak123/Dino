@@ -38,9 +38,13 @@ class Window(pyg.window.Window):
 
         self.sleep = 30 #30 frames untill first enemy
         self.state = None #the players state
+        self.running = True
 
         ground_handler = self.space.add_collision_handler(1, 2) #collision handler to know when player is on the ground
         ground_handler.begin = self.coll_ground
+
+        end_handler = self.space.add_collision_handler(2, 3)
+        end_handler.begin = self.coll_enemy
 
     def on_draw(self):
         self.clear()
@@ -67,11 +71,15 @@ class Window(pyg.window.Window):
             self.state = None
         return True
 
+    def coll_enemy(self, arbiter, space, data):
+        self.running = False
+
     def update(self, dt): #date and time
-        self.space.step(dt) #steps every frame
-        self.action(self.player, self.state)
-        self.enemy_generation()
-        self.sprite_update()
+        if self.running:
+            self.space.step(dt) #steps every frame
+            self.action(self.player, self.state)
+            self.enemy_generation()
+            self.sprite_update()
 
     def action (self, player, state=None):
         if self.state == 'jumping':
