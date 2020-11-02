@@ -74,6 +74,7 @@ class Window(pyg.window.Window):
 
     def coll_enemy(self, arbiter, space, data):
         self.running = False
+        return False
 
     def update(self, dt): #date and time
         if self.running:
