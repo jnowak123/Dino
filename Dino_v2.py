@@ -8,7 +8,7 @@ from pyglet.window import FPSDisplay, key
 from pyglet.gl import glClearColor
 
 class Game_Object(pym.Body):
-    def __init__(self, space, sizex, sizey, posx, posy, velx=0, vely=0, body_type=1, name=None):
+    def __init__(self, space, sizex, sizey, posx, posy, velx, vely, body_type, name=None):
         super().__init__(10, pym.inf, body_type)
         self.position = posx, posy
         self.velocity = velx, vely
@@ -20,7 +20,7 @@ class Sprites():
     def __init__(self):
         pass
 
-object_types = [[40, 80, 200, 60, name=1], [40, 40, 200, 40, name=1], [2700, 40, 0, 0, body_type=2, name=2], #player, player ducking and ground
+object_types = [[40, 80, 200, 60, 0, 0, 0, 2], [40, 40, 200, 40, 0, 0, 0, 2], [2700, 40, 0, 0, 0, 0, 2, 1], #player, player ducking and ground
                 [160,80,1280,60], [40, 80,1280,60], [40, 40,1280,40], [40, 40,1280,40], [120, 40,1280,40]] #cactuses
 
 class Window(pyg.window.Window):
