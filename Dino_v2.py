@@ -20,7 +20,7 @@ class Sprites():
     def __init__(self):
         pass
 
-object_types = [[40, 80, 200, 60, 0, 0, 0], [40, 40, 200, 40, 0, 0, 0], [2700, 40, 0, 0, 0, 0, 2], #player, player ducking and ground
+object_types = [[40, 80, 200, 60, 0, 0, 1], [40, 40, 200, 40, 0, 0, 1], [2700, 40, 0, 0, 0, 0, 2], #player, player ducking and ground
                 [160,80,1280,60], [40, 80,1280,60], [40, 40,1280,40], [40, 40,1280,40], [120, 40,1280,40]] #cactuses
 
 class Window(pyg.window.Window):
@@ -31,16 +31,13 @@ class Window(pyg.window.Window):
         self.fps = FPSDisplay(self)
 
         self.space = pym.Space() #pymunk space
-        self.space.gravity = 0, -900 
         self.options = DrawOptions() #pymunk + pyglet integration
-        self.space.iterations = 250 #how often a list checks if something should bounce
 
         self.player = Game_Object(self.space, *object_types[0])
         self.ground = Game_Object(self.space, *object_types[2])
 
         self.sleep = 30 #30 frames untill first enemy
-        self.game_speed = 200
-        self.doing_duck = False
+        self.state = None
         self.doing_jump = False
 
     def on_draw(self):
@@ -49,22 +46,16 @@ class Window(pyg.window.Window):
         self.fps.draw()
 
     def on_key_press(self, symbol, modifiers):
-#The player can only begin an action when he is on the ground, we check this using his y coordinate (rounded to 10)
-        if round(self.player.position[1]/10)*10 == 60: 
-            if symbol == key.SPACE or symbol == key.UP:
-                self.doing_jump = True #see key release
-                self.player.velocity = 0, 700
-            elif symbol == key.DOWN:
-                self.doing_duck = True #see key release
-                self.space.remove(self.player.shape) #deletes the player, to then create a smaller one
-                self.player = Game_Object(self.space, *object_types[1])
+        if symbol == key.SPACE or symbol == key.UP:
+            self.state = 'jumping'
+        elif symbol == key.DOWN:
+            self.doing_duck = True #see key release
+            self.space.remove(self.player.shape) #deletes the player, to then create a smaller one
+            self.player = Game_Object(self.space, *object_types[1])
 
     def on_key_release(self, symbol, modifiers):
         if symbol == key.SPACE or symbol == key.UP:
-#checks if the player was allowed to jump/duck. If the player hit and release a key in the air, nothing happens
-            if self.doing_jump and self.player.velocity[1] > 0: #checks if player isn't already falling
-                self.doing_jump = False
-                self.player.velocity = 0, 0
+            self.state = 'falling'
         if symbol == key.DOWN and self.doing_duck:
             self.doing_duck = False
             self.space.remove(self.player.shape) #deletes small player and creates a new, normally sized one
@@ -72,16 +63,24 @@ class Window(pyg.window.Window):
 
     def update(self, dt): #date and time
         self.space.step(dt) #steps every frame
+        self.jump(self.player, self.state)
         self.enemy_generation()
         self.sprite_update()
-        self.game_speed += 0.1
+
+    def jump (self, player, state=None):
+        if state == 'jumping':
+            player.velocity += 0, 100
+        elif state == 'falling':
+            player.velocity += 0, -10
+        else:
+            player.velocity = 0, 0
 
     def enemy_generation(self):
         self.sleep -= 1
         if self.sleep == 0:
             self.sleep = random.randint(90, 150) #random sleep time intil new enemy is generated
             x = random.randint(3,7)
-            self.enemy = Game_Object(self.space, *object_types[x], -self.game_speed, 0, 1)
+            self.enemy = Game_Object(self.space, *object_types[x], -200, 0, 1)
 
     def sprite_update(self):
         pass
