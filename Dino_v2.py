@@ -7,7 +7,7 @@ from pymunk.pyglet_util import DrawOptions
 from pyglet.window import FPSDisplay, key
 from pyglet.gl import glClearColor
 
-class Game_Object(pym.Body):
+class Game_Object(pym.Body): #class for creating all objects, in the future this will be replaced by sprites
     def __init__(self, space, sizex, sizey, posx, posy, velx, vely, body_type, name=None):
         super().__init__(10, pym.inf, body_type)
         self.position = posx, posy
@@ -16,7 +16,7 @@ class Game_Object(pym.Body):
         self.shape.collision_type = name
         space.add(self, self.shape)
 
-class Sprites():
+class Sprites(): #sprite class, todo
     def __init__(self):
         pass
 
@@ -37,10 +37,9 @@ class Window(pyg.window.Window):
         self.ground = Game_Object(self.space, *object_types[2])
 
         self.sleep = 30 #30 frames untill first enemy
-        self.state = None
-        self.doing_duck = False
+        self.state = None #the players state
 
-        ground_handler = self.space.add_collision_handler(1, 2)
+        ground_handler = self.space.add_collision_handler(1, 2) #collision handler to know when player is on the ground
         ground_handler.begin = self.coll_ground
 
     def on_draw(self):
@@ -53,7 +52,7 @@ class Window(pyg.window.Window):
             if symbol == key.SPACE or symbol == key.UP:
                 self.jumping_time = 0
                 self.state = 'jumping'
-            elif symbol == key.DOWN:
+            elif symbol == key.DOWN: 
                 self.state = 'ducking'
 
 
@@ -64,7 +63,7 @@ class Window(pyg.window.Window):
             self.state = 'unducking'
 
     def coll_ground(self, arbiter, space, data):
-        if self.state != 'ducking' and self.state != 'unducking':
+        if self.state != 'ducking' and self.state != 'unducking': #ducking is done on the ground
             self.state = None
         return True
 
@@ -77,20 +76,20 @@ class Window(pyg.window.Window):
     def action (self, player, state=None):
         if self.state == 'jumping':
             self.jumping_time += 1
-            if self.jumping_time == 9:
+            if self.jumping_time == 9: #allows you to jump for only x iterations of the update class
                 self.state = 'falling'
-            player.velocity += 0, 75
+            player.velocity += 0, 75 #this and falling, define our space gravity
         elif self.state == 'falling':
-            player.velocity += 0, -20
+            player.velocity += 0, -20 #see above
         elif self.state == 'ducking':
             self.space.remove(self.player.shape) #deletes the player, to then create a smaller one
             self.player = Game_Object(self.space, *object_types[1])
         elif self.state == 'unducking':
             self.space.remove(self.player.shape) #deletes small player and creates a new, normally sized one
             self.player = Game_Object(self.space, *object_types[0])
-            self.state = None
+            self.state = None #changes the state because ducking is on the ground, see coll_ground class
         else:
-            player.velocity = 0, 0
+            player.velocity = 0, 0 #None means on the player is on the ground
 
     def enemy_generation(self):
         self.sleep -= 1
@@ -99,7 +98,7 @@ class Window(pyg.window.Window):
             x = random.randint(3,7)
             self.enemy = Game_Object(self.space, *object_types[x], -200, 0, 1, 3)
 
-    def sprite_update(self):
+    def sprite_update(self): #to do
         pass
 
 window = Window(1280, 720, 'Pymunk', resizable=False)
