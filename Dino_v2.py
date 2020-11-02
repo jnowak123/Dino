@@ -8,19 +8,20 @@ from pyglet.window import FPSDisplay, key
 from pyglet.gl import glClearColor
 
 class Game_Object(pym.Body):
-    def __init__(self, space, sizex, sizey, posx, posy, velx, vely, body_type):
+    def __init__(self, space, sizex, sizey, posx, posy, velx, vely, body_type, name=None):
         super().__init__(10, pym.inf, body_type)
         self.position = posx, posy
         self.velocity = velx, vely
         self.shape = pym.Poly.create_box(self, (sizex, sizey))
         self.shape.elasticity = 0.0
+        self.shape.collision_type = name
         space.add(self, self.shape)
 
 class Sprites():
     def __init__(self):
         pass
 
-object_types = [[40, 80, 200, 60, 0, 0, 1], [40, 40, 200, 40, 0, 0, 1], [2700, 40, 0, 0, 0, 0, 2], #player, player ducking and ground
+object_types = [[40, 80, 200, 60, 0, 0, 0, 2], [40, 40, 200, 40, 0, 0, 0, 2], [2700, 40, 0, 0, 0, 0, 2, 1], #player, player ducking and ground
                 [160,80,1280,60], [40, 80,1280,60], [40, 40,1280,40], [40, 40,1280,40], [120, 40,1280,40]] #cactuses
 
 class Window(pyg.window.Window):
@@ -39,6 +40,9 @@ class Window(pyg.window.Window):
         self.sleep = 30 #30 frames untill first enemy
         self.state = None
         self.doing_jump = False
+
+        ground_handler = self.space.add_collision_handler(1, 2)
+        ground_handler.begin = self.coll_begin
 
     def on_draw(self):
         self.clear()
@@ -61,6 +65,10 @@ class Window(pyg.window.Window):
             self.space.remove(self.player.shape) #deletes small player and creates a new, normally sized one
             self.player = Game_Object(self.space, *object_types[0])
 
+    def coll_begin(self, arbiter, space, data):
+        self.state = None
+        return True
+
     def update(self, dt): #date and time
         self.space.step(dt) #steps every frame
         self.jump(self.player, self.state)
@@ -80,7 +88,7 @@ class Window(pyg.window.Window):
         if self.sleep == 0:
             self.sleep = random.randint(90, 150) #random sleep time intil new enemy is generated
             x = random.randint(3,7)
-            self.enemy = Game_Object(self.space, *object_types[x], -200, 0, 1)
+            self.enemy = Game_Object(self.space, *object_types[x], -200, 0, 1, 3)
 
     def sprite_update(self):
         pass
