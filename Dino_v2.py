@@ -16,13 +16,21 @@ class Game_Object(pym.Body): #class for creating all objects, in the future this
         self.shape.collision_type = name
         space.add(self, self.shape)
 
-class Sprites(): #sprite class, todo
-    def __init__(self):
-        pass
-
+class Sprites(pyg.sprite.Sprite): #sprite class, todo
+    def __init__(self, images, animation, position):      
+        if animation :
+            ani = pyg.image.Animation.from_image_sequence(images,duration= 0.075, loop=True)
+            super().__init__(img = ani)
+        else:
+            super().__init__(images)
+        self.position = position
+    
 object_types = [[40, 80, 200, 60, 0, 0, 0, 2], [40, 40, 200, 40, 0, 0, 0, 2], [2700, 40, 0, 0, 0, 0, 2, 1], #player, player ducking and ground
                 [160,80,1280,60], [40, 80,1280,60], [40, 40,1280,40], [80, 40,1280,40], [120, 40,1280,40], #cactuses
                 [80, 40, 1280, 40], [80, 40, 1280, 81], [80, 40, 1280, 121]] #birds
+sprite_types = [[[pyg.image.load("sprites/dino/kostium3.png"), pyg.image.load("sprites/dino/kostium5.png"),pyg.image.load("sprites/dino/kostium3.png"),pyg.image.load("sprites/dino/kostium6.png")], True, (200, 60)],
+                [pyg.image.load("sprites/dino/kostium3.png"), False, (200, 60)],
+                [[pyg.image.load("sprites/dino/kostium7.png"), pyg.image.load("sprites/dino/kostium8.png"),pyg.image.load("sprites/dino/kostium7.png"),pyg.image.load("sprites/dino/kostium9.png")], True, (200, 60)]]
 
 class Window(pyg.window.Window):
     def __init__(self, *args, **kwargs): #arguments and keyword arguments
@@ -36,6 +44,10 @@ class Window(pyg.window.Window):
 
         self.player = Game_Object(self.space, *object_types[0])
         self.ground = Game_Object(self.space, *object_types[2])
+
+        self.player_sprite_walking = Sprites(*sprite_types[0])
+        self.player_sprite_jumping = Sprites(*sprite_types[1])
+        self.player_sprite_ducking = Sprites(*sprite_types[2])
 
         self.sleep = 30 #30 frames untill first enemy
         self.state = None #the players state
@@ -109,7 +121,15 @@ class Window(pyg.window.Window):
             self.enemy = Game_Object(self.space, *object_types[x], -200, 0, 1, 3)
 
     def sprite_update(self): #to do
-        pass
+        if self.state == "jumping" :
+            self.player_sprite_jumping.position = self.player.position
+            self.player_sprite_jumping.draw()
+        elif self.state == "ducking" :
+            self.player_sprite_ducking.position = self.player.position
+            self.player_sprite_ducking.draw()
+        else:
+            self.player_sprite_ducking.position = 200, 40#self.player.position
+            self.player_sprite_ducking.draw()
 
 window = Window(1280, 720, 'Pymunk', resizable=False)
 pyg.clock.schedule_interval(window.update, 1/60) #60 frames per second
