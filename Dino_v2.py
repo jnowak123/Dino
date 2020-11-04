@@ -63,6 +63,7 @@ class Window(pyg.window.Window):
         self.clear()
         self.space.debug_draw(self.options) #drawing the pymunk space in pyglet
         self.fps.draw()
+        self.sprite_update()
 
     def on_key_press(self, symbol, modifiers):
         if self.state == None:
@@ -93,7 +94,7 @@ class Window(pyg.window.Window):
             self.space.step(dt) #steps every frame
             self.action(self.player, self.state)
             self.enemy_generation()
-            self.sprite_update()
+            
 
     def action (self, player, state=None):
         if self.state == 'jumping':
@@ -121,15 +122,15 @@ class Window(pyg.window.Window):
             self.enemy = Game_Object(self.space, *object_types[x], -200, 0, 1, 3)
 
     def sprite_update(self): #to do
-        if self.state == "jumping" :
-            self.player_sprite_jumping.position = self.player.position
+        if self.state == "jumping" or self.state == "falling" :
+            self.player_sprite_jumping.position = (self.player.position[0] - 20, self.player.position[1] - 40)
             self.player_sprite_jumping.draw()
         elif self.state == "ducking" :
-            self.player_sprite_ducking.position = self.player.position
+            self.player_sprite_ducking.position = (self.player.position[0] - 20, self.player.position[1] - 20)
             self.player_sprite_ducking.draw()
         else:
-            self.player_sprite_ducking.position = 200, 40#self.player.position
-            self.player_sprite_ducking.draw()
+            self.player_sprite_walking.position =(self.player.position[0] - 20, self.player.position[1] - 40)#self.player.position
+            self.player_sprite_walking.draw()
 
 window = Window(1280, 720, 'Pymunk', resizable=False)
 pyg.clock.schedule_interval(window.update, 1/60) #60 frames per second
