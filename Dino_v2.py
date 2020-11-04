@@ -30,7 +30,8 @@ object_types = [[40, 80, 200, 60, 0, 0, 0, 2], [40, 40, 200, 40, 0, 0, 0, 2], [2
                 [80, 40, 1280, 40], [80, 40, 1280, 81], [80, 40, 1280, 121]] #birds
 sprite_types = [[[pyg.image.load("sprites/dino/kostium3.png"), pyg.image.load("sprites/dino/kostium5.png"),pyg.image.load("sprites/dino/kostium3.png"),pyg.image.load("sprites/dino/kostium6.png")], True, (200, 60)],
                 [pyg.image.load("sprites/dino/kostium3.png"), False, (200, 60)],
-                [[pyg.image.load("sprites/dino/kostium7.png"), pyg.image.load("sprites/dino/kostium8.png"),pyg.image.load("sprites/dino/kostium7.png"),pyg.image.load("sprites/dino/kostium9.png")], True, (200, 60)]]
+                [[pyg.image.load("sprites/dino/kostium7.png"), pyg.image.load("sprites/dino/kostium8.png"),pyg.image.load("sprites/dino/kostium7.png"),pyg.image.load("sprites/dino/kostium9.png")], True, (200, 60)],
+                [pyg.image.load("sprites/dino/kostium4.png"), False, (200, 60)]]
 
 class Window(pyg.window.Window):
     def __init__(self, *args, **kwargs): #arguments and keyword arguments
@@ -48,6 +49,7 @@ class Window(pyg.window.Window):
         self.player_sprite_walking = Sprites(*sprite_types[0])
         self.player_sprite_jumping = Sprites(*sprite_types[1])
         self.player_sprite_ducking = Sprites(*sprite_types[2])
+        self.player_sprite_dead = Sprites(*sprite_types[3])
 
         self.sleep = 30 #30 frames untill first enemy
         self.state = None #the players state
@@ -128,6 +130,9 @@ class Window(pyg.window.Window):
         elif self.state == "ducking" :
             self.player_sprite_ducking.position = (self.player.position[0] - 20, self.player.position[1] - 20)
             self.player_sprite_ducking.draw()
+        elif not self.running :
+            self.player_sprite_dead.position = (self.player.position[0] - 20, self.player.position[1] - 40)
+            self.player_sprite_dead.draw()
         else:
             self.player_sprite_walking.position =(self.player.position[0] - 20, self.player.position[1] - 40)#self.player.position
             self.player_sprite_walking.draw()
