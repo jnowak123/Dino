@@ -45,6 +45,7 @@ class Window(pyg.window.Window):
 
         self.player = Game_Object(self.space, *object_types[0])
         self.ground = Game_Object(self.space, *object_types[2])
+        self.enemy_list = []
 
         self.player_sprite_walking = Sprites(*sprite_types[0])
         self.player_sprite_jumping = Sprites(*sprite_types[1])
@@ -96,7 +97,7 @@ class Window(pyg.window.Window):
             self.space.step(dt) #steps every frame
             self.action(self.player, self.state)
             self.enemy_generation()
-            
+            self.enemy_removal()
 
     def action (self, player, state=None):
         if self.state == 'jumping':
@@ -121,7 +122,12 @@ class Window(pyg.window.Window):
         if self.sleep == 0:
             self.sleep = random.randint(90, 150) #random sleep time intil new enemy is generated
             x = random.randint(3,10)
-            self.enemy = Game_Object(self.space, *object_types[x], -200, 0, 1, 3)
+            self.enemy_list.append(Game_Object(self.space, *object_types[x], -200, 0, 1, 3))
+
+    def enemy_removal(self):
+        for enemy in self.enemy_list:
+            if enemy.position[1] < 100:
+                self.space.remove(enemy)
 
     def sprite_update(self): #to do
         if not self.running :
