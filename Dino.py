@@ -155,7 +155,7 @@ class Window(pyg.window.Window):
         self.counter_vel -= dt
         if self.counter_vel < 0:
             self.enemy_velocity -= 10
-            self.counter_vel = 5
+            self.counter_vel = 1000
             self.randomsleep_up -= 5
             self.randomsleep_down -= 5
 
