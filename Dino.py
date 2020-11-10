@@ -129,7 +129,7 @@ class Window(pyg.window.Window):
         if self.sleep == 0:
             self.sleep = random.randint(self.randomsleep_down, self.randomsleep_up) #random sleep time intil new enemy is generated
             x = random.randint(3,10)
-            self.enemy_list.append(Game_Object(self.space, *object_types[x], -200, 0, 1, 3))
+            self.enemy_list.append(Game_Object(self.space, *object_types[x], self.enemy_velocity, 0, 1, 3))
 
     def enemy_removal(self):
         for index, enemy in enumerate(self.enemy_list):
@@ -155,7 +155,6 @@ class Window(pyg.window.Window):
         self.counter_vel -= dt
         if self.counter_vel < 0:
             self.enemy_velocity -= 10
-            print(self.enemy_velocity)
             self.counter_vel = 5
             self.randomsleep_up -= 5
             self.randomsleep_down -= 5
