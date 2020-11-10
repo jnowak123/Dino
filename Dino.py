@@ -133,7 +133,7 @@ class Window(pyg.window.Window):
 
     def enemy_removal(self):
         for index, enemy in enumerate(self.enemy_list):
-            if enemy.position[0] < 0:
+            if enemy.position[0] < -50:
                 self.space.remove(enemy, enemy.shape)
                 self.enemy_list.pop(index)
 
@@ -155,7 +155,7 @@ class Window(pyg.window.Window):
         self.counter_vel -= dt
         if self.counter_vel < 0:
             self.enemy_velocity -= 10
-            self.counter_vel = 1000
+            self.counter_vel = 5
             self.randomsleep_up -= 5
             self.randomsleep_down -= 5
 
