@@ -133,7 +133,7 @@ class Window(pyg.window.Window):
 
     def enemy_removal(self):
         for index, enemy in enumerate(self.enemy_list):
-            if enemy.position[0] < 300:
+            if enemy.position[0] < 0:
                 self.space.remove(enemy, enemy.shape)
                 self.enemy_list.pop(index)
 
