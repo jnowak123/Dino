@@ -125,9 +125,10 @@ class Window(pyg.window.Window):
             self.enemy_list.append(Game_Object(self.space, *object_types[x], -200, 0, 1, 3))
 
     def enemy_removal(self):
-        for enemy in self.enemy_list:
+        for index, enemy in enumerate(self.enemy_list):
             if enemy.position[1] < 100:
                 self.space.remove(enemy)
+                self.enemy_list.pop(index)
 
     def sprite_update(self): #to do
         if not self.running :
