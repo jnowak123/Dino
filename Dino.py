@@ -7,6 +7,14 @@ from pymunk.pyglet_util import DrawOptions
 from pyglet.window import FPSDisplay, key
 from pyglet.gl import glClearColor
 
+class Player_Object(pym.Body): #class for creating all objects, in the future this will be replaced by sprites
+    def __init__(self, space, vertices, posx, posy, velx, vely, body_type, name=None):
+        super().__init__(10, pym.inf, body_type)
+        self.position = posx, posy
+        self.velocity = velx, vely
+        self.shape = pym.Poly(self, vertices)
+        self.shape.collision_type = name
+        space.add(self, self.shape)
 class Game_Object(pym.Body): #class for creating all objects, in the future this will be replaced by sprites
     def __init__(self, space, sizex, sizey, posx, posy, velx, vely, body_type, name=None):
         super().__init__(10, pym.inf, body_type)
@@ -15,7 +23,6 @@ class Game_Object(pym.Body): #class for creating all objects, in the future this
         self.shape = pym.Poly.create_box(self, (sizex, sizey))
         self.shape.collision_type = name
         space.add(self, self.shape)
-
 class Sprites(pyg.sprite.Sprite): #sprite class, todo
     def __init__(self, images, animation, position):      
         if animation :
@@ -25,12 +32,12 @@ class Sprites(pyg.sprite.Sprite): #sprite class, todo
             super().__init__(images)
         self.position = position
     
-object_types = [[40, 80, 200, 60, 0, 0, 0, 2], [40, 40, 200, 40, 0, 0, 0, 2], [2700, 40, 0, 0, 0, 0, 2, 1], #player, player ducking and ground
+object_types = [[((0,32), (0,54), (44,88), (84,88), (84,64), (48,0), (18,0)), 200, 20, 0, 0, 0, 2], [((0,40), (24,0), (36,0),(108,32),(108,48),(0,48)), 200, 20, 0, 0, 0, 2], [2700, 40, 0, 0, 0, 0, 2, 1], #player, player ducking and ground
                 [160,80,1280,60], [40, 80,1280,60], [40, 40,1280,40], [80, 40,1280,40], [120, 40,1280,40], #cactuses
                 [80, 40, 1280, 40], [80, 40, 1280, 81], [80, 40, 1280, 121]] #birds
 sprite_types = [[[pyg.image.load("sprites/dino/kostium3.png"), pyg.image.load("sprites/dino/kostium5.png"),pyg.image.load("sprites/dino/kostium3.png"),pyg.image.load("sprites/dino/kostium6.png")], True, (200, 60)],
                 [pyg.image.load("sprites/dino/kostium3.png"), False, (200, 60)],
-                [[pyg.image.load("sprites/dino/kostium7.png"), pyg.image.load("sprites/dino/kostium8.png"),pyg.image.load("sprites/dino/kostium7.png"),pyg.image.load("sprites/dino/kostium9.png")], True, (200, 60)],
+                [[pyg.image.load("sprites/dino/kostium0.png"), pyg.image.load("sprites/dino/kostium1.png"),pyg.image.load("sprites/dino/kostium0.png"),pyg.image.load("sprites/dino/kostium2.png")], True, (200, 60)],
                 [pyg.image.load("sprites/dino/kostium4.png"), False, (200, 60)]]
 
 class Window(pyg.window.Window):
@@ -43,7 +50,7 @@ class Window(pyg.window.Window):
         self.space = pym.Space() #pymunk space
         self.options = DrawOptions() #pymunk + pyglet integration
 
-        self.player = Game_Object(self.space, *object_types[0])
+        self.player = Player_Object(self.space, *object_types[0])
         self.ground = Game_Object(self.space, *object_types[2])
 
         self.player_sprite_walking = Sprites(*sprite_types[0])
@@ -108,10 +115,10 @@ class Window(pyg.window.Window):
             player.velocity += 0, -20 #see above
         elif self.state == 'ducking':
             self.space.remove(self.player.shape) #deletes the player, to then create a smaller one
-            self.player = Game_Object(self.space, *object_types[1])
+            self.player = Player_Object(self.space, *object_types[1])
         elif self.state == 'unducking':
             self.space.remove(self.player.shape) #deletes small player and creates a new, normally sized one
-            self.player = Game_Object(self.space, *object_types[0])
+            self.player = Player_Object(self.space, *object_types[0])
             self.state = None #changes the state because ducking is on the ground, see coll_ground class
         else:
             player.velocity = 0, 0 #None means on the player is on the ground
@@ -125,16 +132,16 @@ class Window(pyg.window.Window):
 
     def sprite_update(self): #to do
         if self.state == "jumping" or self.state == "falling" :
-            self.player_sprite_jumping.position = (self.player.position[0] - 20, self.player.position[1] - 40)
+            self.player_sprite_jumping.position = (self.player.position[0], self.player.position[1])
             self.player_sprite_jumping.draw()
         elif self.state == "ducking" :
-            self.player_sprite_ducking.position = (self.player.position[0] - 20, self.player.position[1] - 20)
+            self.player_sprite_ducking.position = (self.player.position[0], self.player.position[1])
             self.player_sprite_ducking.draw()
         elif not self.running :
-            self.player_sprite_dead.position = (self.player.position[0] - 20, self.player.position[1] - 40)
+            self.player_sprite_dead.position = (self.player.position[0], self.player.position[1])
             self.player_sprite_dead.draw()
         else:
-            self.player_sprite_walking.position =(self.player.position[0] - 20, self.player.position[1] - 40)#self.player.position
+            self.player_sprite_walking.position =(self.player.position[0], self.player.position[1])#self.player.position
             self.player_sprite_walking.draw()
 
 window = Window(1280, 720, 'Pymunk', resizable=False)
