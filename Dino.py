@@ -52,6 +52,7 @@ class Window(pyg.window.Window):
 
         self.player = Player_Object(self.space, *object_types[0])
         self.ground = Game_Object(self.space, *object_types[2])
+        self.enemy_list = []
 
         self.player_sprite_walking = Sprites(*sprite_types[0])
         self.player_sprite_jumping = Sprites(*sprite_types[1])
@@ -59,6 +60,8 @@ class Window(pyg.window.Window):
         self.player_sprite_dead = Sprites(*sprite_types[3])
 
         self.sleep = 30 #30 frames untill first enemy
+        self.randomsleep_down = 90
+        self.randomsleep_up = 150
         self.state = None #the players state
         self.running = True
 
@@ -67,6 +70,9 @@ class Window(pyg.window.Window):
 
         end_handler = self.space.add_collision_handler(2, 3)
         end_handler.begin = self.coll_enemy
+        
+        self.counter_vel = 5
+        self.enemy_velocity = -200
 
     def on_draw(self):
         self.clear()
@@ -103,6 +109,8 @@ class Window(pyg.window.Window):
             self.space.step(dt) #steps every frame
             self.action(self.player, self.state)
             self.enemy_generation()
+            self.enemy_removal()
+            self.acceleration(dt)
             
 
     def action (self, player, state=None):
@@ -126,9 +134,15 @@ class Window(pyg.window.Window):
     def enemy_generation(self):
         self.sleep -= 1
         if self.sleep == 0:
-            self.sleep = random.randint(90, 150) #random sleep time intil new enemy is generated
+            self.sleep = random.randint(self.randomsleep_down, self.randomsleep_up) #random sleep time intil new enemy is generated
             x = random.randint(3,10)
-            self.enemy = Game_Object(self.space, *object_types[x], -200, 0, 1, 3)
+            self.enemy_list.append(Game_Object(self.space, *object_types[x], self.enemy_velocity, 0, 1, 3))
+
+    def enemy_removal(self):
+        for index, enemy in enumerate(self.enemy_list):
+            if enemy.position[0] < -50:
+                self.space.remove(enemy, enemy.shape)
+                self.enemy_list.pop(index)
 
     def sprite_update(self): #to do
         if self.state == "jumping" or self.state == "falling" :
@@ -143,6 +157,15 @@ class Window(pyg.window.Window):
         else:
             self.player_sprite_walking.position =(self.player.position[0], self.player.position[1])#self.player.position
             self.player_sprite_walking.draw()
+
+    def acceleration(self, dt):
+        self.counter_vel -= dt
+        if self.counter_vel < 0:
+            self.enemy_velocity -= 10
+            self.counter_vel = 5
+            self.randomsleep_up -= 5
+            self.randomsleep_down -= 5
+
 
 window = Window(1280, 720, 'Pymunk', resizable=False)
 pyg.clock.schedule_interval(window.update, 1/60) #60 frames per second
