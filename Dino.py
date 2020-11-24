@@ -34,7 +34,7 @@ class Sprites(pyg.sprite.Sprite): #sprite class, todo
     
 object_types = [[((0,32), (0,54), (44,88), (84,88), (84,64), (48,0), (18,0)), 200, 20, 0, 0, 0, 2], [((0,40), (24,0), (36,0),(108,32),(108,48),(0,48)), 200, 20, 0, 0, 0, 2], [2700, 40, 0, 0, 0, 0, 2, 1], #player, player ducking and ground
                 [160,80,1280,60], [40, 80,1280,60], [40, 40,1280,40], [80, 40,1280,40], [120, 40,1280,40], #cactuses
-                [80, 40, 1280, 40], [80, 40, 1280, 81], [80, 40, 1280, 121]] #birds
+                [80, 40, 1280, 40], [80, 40, 1280, 89], [80, 40, 1280, 129]] #birds
 sprite_types = [[[pyg.image.load("sprites/dino/kostium3.png"), pyg.image.load("sprites/dino/kostium5.png"),pyg.image.load("sprites/dino/kostium3.png"),pyg.image.load("sprites/dino/kostium6.png")], True, (200, 60)],
                 [pyg.image.load("sprites/dino/kostium3.png"), False, (200, 60)],
                 [[pyg.image.load("sprites/dino/kostium0.png"), pyg.image.load("sprites/dino/kostium1.png"),pyg.image.load("sprites/dino/kostium0.png"),pyg.image.load("sprites/dino/kostium2.png")], True, (200, 60)],
