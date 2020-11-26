@@ -162,9 +162,11 @@ class Window(pyg.window.Window):
         self.counter_vel -= dt
         if self.counter_vel < 0:
             self.enemy_velocity -= 10
-            self.counter_vel = 5
-            self.randomsleep_up -= 5
-            self.randomsleep_down -= 5
+            self.counter_vel = 2
+            if self.randomsleep_up > 60:
+                self.randomsleep_up -= 2
+            if self.randomsleep_down > 20:
+                self.randomsleep_down -= 2
 
 
 window = Window(1280, 720, 'Pymunk', resizable=False)
