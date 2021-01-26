@@ -15,6 +15,7 @@ class Player_Object(pym.Body): #class for creating all objects, in the future th
         self.shape = pym.Poly(self, vertices)
         self.shape.collision_type = name
         space.add(self, self.shape)
+
 class Game_Object(pym.Body): #class for creating all objects, in the future this will be replaced by sprites
     def __init__(self, space, sizex, sizey, posx, posy, velx, vely, body_type, name=None):
         super().__init__(10, pym.inf, body_type)
@@ -23,6 +24,7 @@ class Game_Object(pym.Body): #class for creating all objects, in the future this
         self.shape = pym.Poly.create_box(self, (sizex, sizey))
         self.shape.collision_type = name
         space.add(self, self.shape)
+        
 class Sprites(pyg.sprite.Sprite): #sprite class, todo
     def __init__(self, images, animation, position):      
         if animation :
@@ -33,8 +35,8 @@ class Sprites(pyg.sprite.Sprite): #sprite class, todo
         self.position = position
     
 object_types = [[((0,32), (0,54), (44,88), (84,88), (84,64), (48,0), (18,0)), 200, 20, 0, 0, 0, 2], [((0,40), (24,0), (36,0),(108,32),(108,48),(0,48)), 200, 20, 0, 0, 0, 2], [2700, 40, 0, 0, 0, 0, 2, 1], #player, player ducking and ground
-                [160,80,1280,60], [40, 80,1280,60], [40, 40,1280,40], [80, 40,1280,40], [120, 40,1280,40], #cactuses
-                [80, 40, 1280, 40], [80, 40, 1280, 81], [80, 40, 1280, 121]] #birds
+                [140,80,1280,60], [40, 80,1280,60], [40, 40,1280,40], [80, 40,1280,40], [120, 40,1280,40], #cactuses
+                [80, 40, 1280, 40], [80, 40, 1280, 89], [80, 40, 1280, 129]] #birds
 sprite_types = [[[pyg.image.load("sprites/dino/kostium3.png"), pyg.image.load("sprites/dino/kostium5.png"),pyg.image.load("sprites/dino/kostium3.png"),pyg.image.load("sprites/dino/kostium6.png")], True, (200, 60)],
                 [pyg.image.load("sprites/dino/kostium3.png"), False, (200, 60)],
                 [[pyg.image.load("sprites/dino/kostium0.png"), pyg.image.load("sprites/dino/kostium1.png"),pyg.image.load("sprites/dino/kostium0.png"),pyg.image.load("sprites/dino/kostium2.png")], True, (200, 60)],
@@ -72,7 +74,7 @@ class Window(pyg.window.Window):
         end_handler.begin = self.coll_enemy
         
         self.counter_vel = 5
-        self.enemy_velocity = -200
+        self.enemy_velocity = -250
 
     def on_draw(self):
         self.clear()
@@ -116,9 +118,11 @@ class Window(pyg.window.Window):
     def action (self, player, state=None):
         if self.state == 'jumping':
             self.jumping_time += 1
-            if self.jumping_time == 9: #allows you to jump for only x iterations of the update class
+            if self.jumping_time == 1:
+                player.velocity += 0, 280
+            elif self.jumping_time == 7: #allows you to jump for only x iterations of the update class
                 self.state = 'falling'
-            player.velocity += 0, 75 #this and falling, define our space gravity
+            player.velocity += 0, 35 #this and falling, define our space gravity
         elif self.state == 'falling':
             player.velocity += 0, -20 #see above
         elif self.state == 'ducking':
@@ -162,9 +166,11 @@ class Window(pyg.window.Window):
         self.counter_vel -= dt
         if self.counter_vel < 0:
             self.enemy_velocity -= 10
-            self.counter_vel = 5
-            self.randomsleep_up -= 5
-            self.randomsleep_down -= 5
+            self.counter_vel = 2
+            if self.randomsleep_up > 60:
+                self.randomsleep_up -= 2
+            if self.randomsleep_down > 20:
+                self.randomsleep_down -= 2
 
 
 window = Window(1280, 720, 'Pymunk', resizable=False)
