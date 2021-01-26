@@ -1,11 +1,11 @@
-import pymunkoptions
-pymunkoptions.options['debug'] = False #removes pymunk debug print from console
 import random
 import pyglet as pyg
 import pymunk as pym
 from pymunk.pyglet_util import DrawOptions
 from pyglet.window import FPSDisplay, key
 from pyglet.gl import glClearColor
+# import pymunkoptions
+# pymunkoptions.options['debug'] = False #removes pymunk debug print from console
 
 class Player_Object(pym.Body): #class for creating all objects, in the future this will be replaced by sprites
     def __init__(self, space, vertices, posx, posy, velx, vely, body_type, name=None):
