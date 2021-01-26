@@ -149,15 +149,15 @@ class Window(pyg.window.Window):
                 self.enemy_list.pop(index)
 
     def sprite_update(self): #to do
-        if self.state == "jumping" or self.state == "falling" :
+        if not self.running :
+            self.player_sprite_dead.position = (self.player.position[0], self.player.position[1])
+            self.player_sprite_dead.draw()
+        elif self.state == "jumping" or self.state == "falling" :
             self.player_sprite_jumping.position = (self.player.position[0], self.player.position[1])
             self.player_sprite_jumping.draw()
         elif self.state == "ducking" :
             self.player_sprite_ducking.position = (self.player.position[0], self.player.position[1])
             self.player_sprite_ducking.draw()
-        elif not self.running :
-            self.player_sprite_dead.position = (self.player.position[0], self.player.position[1])
-            self.player_sprite_dead.draw()
         else:
             self.player_sprite_walking.position =(self.player.position[0], self.player.position[1])#self.player.position
             self.player_sprite_walking.draw()
