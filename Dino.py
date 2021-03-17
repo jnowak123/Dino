@@ -4,6 +4,8 @@ import pymunk as pym
 from pymunk.pyglet_util import DrawOptions
 from pyglet.window import FPSDisplay, key
 from pyglet.gl import glClearColor
+from pyglet import font
+
 # import pymunkoptions
 # pymunkoptions.options['debug'] = False #removes pymunk debug print from console
 
@@ -41,6 +43,8 @@ sprite_types = [[[pyg.image.load("sprites/dino/kostium3.png"), pyg.image.load("s
                 [pyg.image.load("sprites/dino/kostium3.png"), False, (200, 60)],
                 [[pyg.image.load("sprites/dino/kostium0.png"), pyg.image.load("sprites/dino/kostium1.png"),pyg.image.load("sprites/dino/kostium0.png"),pyg.image.load("sprites/dino/kostium2.png")], True, (200, 60)],
                 [pyg.image.load("sprites/dino/kostium4.png"), False, (200, 60)]]
+font.add_file('PressStart2P.ttf')
+PressStart2P = font.load('Press Start 2P')
 
 class Window(pyg.window.Window):
     def __init__(self, *args, **kwargs): #arguments and keyword arguments
@@ -73,14 +77,27 @@ class Window(pyg.window.Window):
         end_handler = self.space.add_collision_handler(2, 3)
         end_handler.begin = self.coll_enemy
         
-        self.counter_vel = 5
+        self.counter_vel = 2
         self.enemy_velocity = -250
+
+        self.points = 0
+        self.scoreLabel = pyg.text.Label('HI',
+                                 font_name='Press Start 2P',
+                                 font_size=20,
+                                 color=(115, 115, 115, 255),
+                                 x=1100, y=700,
+                                 anchor_x='center', anchor_y='center')
+        self.counter_score = 0.1
+        self.value_holder = 0.1
+        self.speedup_score = 3
+
 
     def on_draw(self):
         self.clear()
         self.space.debug_draw(self.options) #drawing the pymunk space in pyglet
         self.fps.draw()
         self.sprite_update()
+        self.scoreLabel.draw()
 
     def on_key_press(self, symbol, modifiers):
         if self.state == None:
@@ -112,8 +129,10 @@ class Window(pyg.window.Window):
             self.action(self.player, self.state)
             self.enemy_generation()
             self.enemy_removal()
-            self.acceleration(dt)
-            
+            self.speed_up(dt)
+            if self.points < 99999:
+                self.score(dt)
+            self.scoreLabel.text = f'HI {self.points}'
 
     def action (self, player, state=None):
         if self.state == 'jumping':
@@ -162,7 +181,7 @@ class Window(pyg.window.Window):
             self.player_sprite_walking.position =(self.player.position[0], self.player.position[1])#self.player.position
             self.player_sprite_walking.draw()
 
-    def acceleration(self, dt):
+    def speed_up(self, dt):
         self.counter_vel -= dt
         if self.counter_vel < 0:
             self.enemy_velocity -= 10
@@ -172,6 +191,16 @@ class Window(pyg.window.Window):
             if self.randomsleep_down > 20:
                 self.randomsleep_down -= 2
 
+    def score(self, dt):
+        self.counter_score -= dt
+        if self.counter_score <0:
+            self.points += 1
+            self.speedup_score -= dt
+            self.counter_score = self.value_holder
+        if self.speedup_score <0:
+            self.counter_score = self.value_holder - 0.5 * dt
+            self.value_holder = self.counter_score
+            self.speedup_score = 3
 
 window = Window(1280, 720, 'Pymunk', resizable=False)
 pyg.clock.schedule_interval(window.update, 1/60) #60 frames per second
