@@ -148,7 +148,8 @@ class Window(pyg.window.Window):
             self.scoreLabel.text = f'{self.points}'
             self.highscoreLabel.text = f'HI {self.highscore}'
         else:
-            self.modify_highscore(self.points)
+            if self.highscore < self.points:
+                self.modify_highscore(self.points)
 
     def action (self, player, state=None):
         if self.state == 'jumping':
