@@ -81,15 +81,22 @@ class Window(pyg.window.Window):
         self.enemy_velocity = -250
 
         self.points = 0
-        self.scoreLabel = pyg.text.Label('HI',
+        self.scoreLabel = pyg.text.Label('',
+                                 font_name='Press Start 2P',
+                                 font_size=20,
+                                 color=(83, 83, 83, 255),
+                                 x=1180, y=700,
+                                 anchor_x='center', anchor_y='center')
+        self.highscoreLabel = pyg.text.Label('HI',
                                  font_name='Press Start 2P',
                                  font_size=20,
                                  color=(115, 115, 115, 255),
-                                 x=1100, y=700,
+                                 x=980, y=700,
                                  anchor_x='center', anchor_y='center')
         self.counter_score = 0.1
         self.value_holder = 0.1
         self.speedup_score = 3
+        self.highscore = self.load()
 
 
     def on_draw(self):
@@ -98,6 +105,7 @@ class Window(pyg.window.Window):
         self.fps.draw()
         self.sprite_update()
         self.scoreLabel.draw()
+        self.highscoreLabel.draw()
 
     def on_key_press(self, symbol, modifiers):
         if self.state == None:
@@ -132,7 +140,10 @@ class Window(pyg.window.Window):
             self.speed_up(dt)
             if self.points < 99999:
                 self.score(dt)
-            self.scoreLabel.text = f'HI {self.points}'
+            self.scoreLabel.text = f'{self.points}'
+            self.highscoreLabel.text = f'HI {self.highscore}'
+        else:
+            self.modify_highscore(self.points)
 
     def action (self, player, state=None):
         if self.state == 'jumping':
@@ -201,6 +212,16 @@ class Window(pyg.window.Window):
             self.counter_score = self.value_holder - 0.5 * dt
             self.value_holder = self.counter_score
             self.speedup_score = 3
+
+    def modify_highscore(self, score):
+        open('highscore.txt', 'w').close()
+        with open('highscore.txt', 'w') as f:
+            f.write(str(score))
+
+    def load(self):
+        with open('highscore.txt') as f:
+            score = int(f.read())
+        return score
 
 window = Window(1280, 720, 'Pymunk', resizable=False)
 pyg.clock.schedule_interval(window.update, 1/60) #60 frames per second
