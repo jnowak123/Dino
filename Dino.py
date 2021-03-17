@@ -5,6 +5,7 @@ from pymunk.pyglet_util import DrawOptions
 from pyglet.window import FPSDisplay, key
 from pyglet.gl import glClearColor
 from pyglet import font
+import os
 
 # import pymunkoptions
 # pymunkoptions.options['debug'] = False #removes pymunk debug print from console
@@ -45,6 +46,10 @@ sprite_types = [[[pyg.image.load("sprites/dino/kostium3.png"), pyg.image.load("s
                 [pyg.image.load("sprites/dino/kostium4.png"), False, (200, 60)]]
 font.add_file('PressStart2P.ttf')
 PressStart2P = font.load('Press Start 2P')
+
+if os.stat('highscore.txt').st_size == 0:
+    with open('highscore.txt', 'w') as f:
+        f.write(str(0))
 
 class Window(pyg.window.Window):
     def __init__(self, *args, **kwargs): #arguments and keyword arguments
